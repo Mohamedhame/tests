@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Document</title>
+  </head>
+  <body dir="rtl">
+    <div id="container" class="container">
+      <div id="nav" class="nav">
+        <div id="link" class="link">
+          <img src="logo.jpg" alt="logo">
+          <a href="index.html">الرئسية</a>
+          <div class="excel" id="excel">excel</div>
+        </div>
+        <div id="icon" class="icon">
+          &#9776;
+        </div>
+      </div>
+      <h3 id="h3" style="display: none"></h3>
+
+      <!--  sample-->
+      <div class="sample">
+        <label for="sample">وزن العينة</label>
+        <input id="sample" type="number" />
+      </div>
+      <!-- // sample-->
+      <!-- Head Table -->
+      <div class="headTable" id="headTable">
+        <div class="sieve">
+          مناخل
+          <hr />
+          <div class="siev">
+            <span>mm</span>
+            <span>no</span>
+          </div>
+        </div>
+        <div class="resrved">محجوز</div>
+        <div class="passing">مار %</div>
+      </div>
+    </div>
+
+    <!-- الـ Dialog -->
+    <div id="overlay" class="overlay">
+      <div class="dialog" id="dialog"></div>
+    </div>
+    <!--// Login -->
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exceljs/dist/exceljs.min.js"></script>
+    <script src="data.js"></script>
+  </body>
+</html>
