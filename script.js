@@ -49,6 +49,7 @@ var sand = [
 
 const container = document.getElementById("container");
 const sampleWeight = document.getElementById("sample");
+const sampleWeight2 = document.getElementById("sample2");
 const headTable = document.getElementById("headTable");
 const mySelect = document.getElementById("mySpinner");
 const userEmail = localStorage.getItem("email");
@@ -56,7 +57,10 @@ const overlay = document.getElementById("overlay");
 const closeDialog = document.getElementById("closeDialog");
 const body = document.getElementById("body");
 const dialog = document.getElementById("dialog");
-let email = localStorage.getItem("email")
+const extract = document.getElementById("extract");
+const extract2 = document.getElementById("extract2");
+const labelExtract = document.getElementById("labelExtract");
+let email = localStorage.getItem("email");
 
 const firebaseConfig = {
   apiKey: "AIzaSyB2A4sAeKJIpoU2uJRq0qELk4l2u1LisS0",
@@ -72,9 +76,35 @@ firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 const db = firebase.firestore();
 
+let bitumin;
+let bituminPercent;
 let content;
 let saveButton;
 var sampleNo = 1;
+extract.style.display = "flex";
+extract2.style.display = "block";
+labelExtract.innerHTML = "وزن العينة بعد الاختبار";
+
+sampleWeight.addEventListener("input", function () {
+  if (sampleWeight2.value != "") {
+    updateBitumin();
+  }
+});
+
+sampleWeight2.addEventListener("input", function () {
+  if (sampleWeight.value != "") {
+    updateBitumin();
+  }
+});
+
+function updateBitumin() {
+  bitumin = sampleWeight2.value - sampleWeight.value;
+  bituminPercent = (bitumin / sampleWeight.value) * 100;
+  extract2.innerHTML = `وزن البيتومين : ${bitumin} نسبة البيتومين : ${bituminPercent.toFixed(
+    2
+  )} %`;
+  extract2.style.textAlign = "center";
+}
 
 function createTableOfExtrac(list) {
   content = globalSieve();
@@ -94,15 +124,16 @@ function createTableOfExtrac(list) {
   saveButton.addEventListener("click", function () {
     const sampleWeightInput = document.getElementById("sample");
     const sampleWeight = sampleWeightInput.value.trim();
+    const sampleWeightInput2 = document.getElementById("sample2");
+    const weightAfter = sampleWeightInput2.value.trim();
     const selectedText = mySelect.options[mySelect.selectedIndex].text;
     const date = getDate();
-    fetchDataFunction(selectedText, date, sampleWeight, list);
+    fetchDataFunction(selectedText, date, sampleWeight, list, weightAfter);
   });
 
   container.appendChild(content);
   container.appendChild(saveButton);
 }
-
 
 function rowTable(sieveMM, sieveNo, index, list) {
   const rowTable = document.createElement("div");
@@ -117,7 +148,7 @@ function rowTable(sieveMM, sieveNo, index, list) {
   titleSieve.appendChild(no);
   const input = document.createElement("input");
   input.classList.add("resrved");
-
+  input.setAttribute("type", "number");
   const passing = document.createElement("div");
   passing.classList.add("passing");
   input.addEventListener("input", function () {
@@ -137,7 +168,7 @@ function rowTable(sieveMM, sieveNo, index, list) {
         list[index].passing = getPassingForOneSieve(input.value);
         console.log(list[index].passing);
       }
-    }else{
+    } else {
       passing.innerHTML = "";
     }
   });
@@ -179,18 +210,33 @@ mySelect.addEventListener("change", function () {
   let list;
   switch (selectedValue) {
     case "item1":
+      extract.style.display = "flex";
+      extract2.style.display = "flex";
+      labelExtract.innerHTML = "وزن العينة بعد الاختبار";
       list = extraction;
       break;
     case "item2":
+      extract.style.display = "none";
+      extract2.style.display = "none";
+      labelExtract.innerHTML = "وزن العينة";
       list = size1;
       break;
     case "item3":
+      extract.style.display = "none";
+      extract2.style.display = "none";
+      labelExtract.innerHTML = "وزن العينة";
       list = size2;
       break;
     case "item4":
+      extract.style.display = "none";
+      extract2.style.display = "none";
+      labelExtract.innerHTML = "وزن العينة";
       list = sand;
       break;
     default:
+      extract.style.display = "none";
+      extract2.style.display = "none";
+      labelExtract.innerHTML = "وزن العينة";
       return;
   }
 
@@ -233,7 +279,13 @@ function createDialog(text = "لا يمكن ترك اي حقل فارغ") {
   dialog.appendChild(btnGetData);
 }
 
-function fetchDataFunction(selectedText, date, sampleWeight, list) {
+function fetchDataFunction(
+  selectedText,
+  date,
+  sampleWeight,
+  list,
+  weightAfter
+) {
   db.collection("test")
     .where("selectedText", "==", selectedText)
     .where("date", "==", date)
@@ -246,19 +298,21 @@ function fetchDataFunction(selectedText, date, sampleWeight, list) {
         sampleNo = 1;
         console.log("لا توجد بيانات");
       }
-      addData(sampleWeight, list, selectedText, date);
+      addData(sampleWeight, list, selectedText, date, weightAfter);
     })
     .catch((error) => {
       console.error("خطأ في جلب البيانات:", error);
     });
 }
 
-function addData(sampleWeight, list, selectedText, date) {
+function addData(sampleWeight, list, selectedText, date, weightAfter) {
   if (!sampleWeight) {
     createDialog();
     overlay.style.display = "flex";
     return;
   }
+
+  const selectedValue = mySelect.value;
 
   dialog.innerHTML = `
         <div class="loader"></div>
@@ -272,21 +326,44 @@ function addData(sampleWeight, list, selectedText, date) {
     resrved: item.resrved,
     passing: item.passing,
   }));
-  db.collection("test")
-    .add({
-      selectedText: selectedText,
-      date: date,
-      weight: sampleWeight,
-      sampleNo: sampleNo,
-      list: plainList,
-      email:email
-    })
-    .then(() => {
-      overlay.style.display = "none";
-      console.log("تم الحفظ بنجاح");
-    })
-    .catch((error) => {
-      overlay.style.display = "none";
-      console.error("حصل خطأ أثناء الحفظ:", error);
-    });
+  if (selectedValue == "item1") {
+    db.collection("test")
+      .add({
+        selectedText: selectedText,
+        date: date,
+        weightAfter: weightAfter,
+        weight: sampleWeight,
+        bitumin:bitumin,
+        bituminPercent:bituminPercent,
+        sampleNo: sampleNo,
+        list: plainList,
+        email: email,
+      })
+      .then(() => {
+        overlay.style.display = "none";
+        console.log("تم الحفظ بنجاح");
+      })
+      .catch((error) => {
+        overlay.style.display = "none";
+        console.error("حصل خطأ أثناء الحفظ:", error);
+      });
+  } else {
+    db.collection("test")
+      .add({
+        selectedText: selectedText,
+        date: date,
+        weight: sampleWeight,
+        sampleNo: sampleNo,
+        list: plainList,
+        email: email,
+      })
+      .then(() => {
+        overlay.style.display = "none";
+        console.log("تم الحفظ بنجاح");
+      })
+      .catch((error) => {
+        overlay.style.display = "none";
+        console.error("حصل خطأ أثناء الحفظ:", error);
+      });
+  }
 }

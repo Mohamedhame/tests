@@ -172,7 +172,10 @@ function getAllDataWithParam(param) {
             sampleNo: doc.data()["sampleNo"],
             selectedText: param,
             weight: doc.data()["weight"],
-            email:doc.data()["email"]
+            email: doc.data()["email"],
+            weightAfter: doc.data()["weightAfter"],
+            bitumin:doc.data()["bitumin"],
+            bituminPercent:doc.data()["bituminPercent"]
           });
         });
         localStorage.setItem("listOfDate", JSON.stringify(listOfDate));

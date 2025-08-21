@@ -16,17 +16,23 @@ const container = document.getElementById("container");
 const headTable = document.getElementById("headTable");
 const h3 = document.getElementById("h3");
 const sampleWieght = document.getElementById("sample");
+const sampleWieght2 = document.getElementById("sample2");
 const overlay = document.getElementById("overlay");
 const icon = document.getElementById("icon");
 const link = document.getElementById("link");
 const nav = document.getElementById("nav");
 const excel = document.getElementById("excel");
+const extract = document.getElementById("extract");
+const extract2 = document.getElementById("extract2");
+const labelExtract = document.getElementById("labelExtract");
 const body = document.body;
 let receivedList = JSON.parse(localStorage.getItem("element"));
 let email = localStorage.getItem("email");
 var dataList = [];
 let content;
 let saveButton;
+let bitumin;
+let bituminPercent;
 
 icon.addEventListener("click", function () {
   if (link.style.display == "flex") {
@@ -55,6 +61,8 @@ body.addEventListener("click", (event) => {
 excel.addEventListener("click", async function () {
   const workbook = new ExcelJS.Workbook();
   const sheet = workbook.addWorksheet("Sheet1");
+  const sampleWeightInput = document.getElementById("sample");
+  const sampleWeight = sampleWeightInput.value.trim();
 
   sheet.columns = [{ width: 12 }, { width: 12 }, { width: 15 }, { width: 15 }];
 
@@ -64,7 +72,7 @@ excel.addEventListener("click", async function () {
   }
 
   // إضافة رقم ووزن العينة في الصف الخامس
-  sheet.addRow([5000, "", "", "وزن العينة"]);
+  sheet.addRow([sampleWeight, "", "", "وزن العينة"]);
   sheet.mergeCells("A5:C5");
 
   // دمج وإضافة الصورة (Base64)
@@ -144,9 +152,44 @@ excel.addEventListener("click", async function () {
   window.open(url, "_blank");
 });
 
+sampleWieght.addEventListener("input", function () {
+  if (sampleWieght2.value != "") {
+    updateBitumin();
+  }
+});
+
+sampleWieght2.addEventListener("input", function () {
+  if (sampleWieght.value != "") {
+    updateBitumin();
+  }
+});
+
+function updateBitumin() {
+  bitumin = sampleWieght2.value - sampleWieght.value;
+  bituminPercent = (bitumin / sampleWieght.value) * 100;
+  extract2.innerHTML = `وزن البيتومين : ${bitumin} نسبة البيتومين : ${bituminPercent.toFixed(
+    2
+  )} %`;
+  extract2.style.textAlign = "center";
+}
+
 function start() {
   h3.innerHTML = receivedList["date"];
   h3.style.display = "flex";
+  h3.style.color = "white";
+  if (receivedList.selectedText == "استخلاص") {
+    extract.style.display = "flex";
+    extract2.style.display = "block";
+    labelExtract.innerHTML = "وزن العينة بعد الاختبار";
+    sampleWieght2.value = receivedList["weightAfter"];
+    bitumin = receivedList["bitumin"];
+    bituminPercent = receivedList["bituminPercent"];
+    extract2.innerHTML = `وزن البيتومين : ${bitumin} نسبة البيتومين : ${bituminPercent.toFixed(
+      2
+    )} %`;
+    extract2.style.textAlign = "center";
+  }
+
   headTable.style.display = "flex";
   container.style.display = "flex";
 
@@ -175,6 +218,7 @@ function start() {
       `;
     overlay.style.display = "flex";
     //=============
+
     db.collection("test")
       .where("selectedText", "==", receivedList.selectedText)
       .where("date", "==", receivedList.date)
@@ -182,11 +226,19 @@ function start() {
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
+          let updateData = {
+            weight: sampleWeight,
+            list: dataList,
+          };
+          if (receivedList.selectedText == "استخلاص") {
+            const sampleWeightInput2 = document.getElementById("sample2");
+            const weightAfter = sampleWeightInput2.value.trim();
+            updateData.weightAfter = weightAfter;
+            updateData.bitumin = bitumin;
+            updateData.bituminPercent = bituminPercent;
+          }
           doc.ref
-            .update({
-              weight: sampleWeight,
-              list: dataList,
-            })
+            .update(updateData)
             .then(() => {
               overlay.style.display = "none";
               console.log("تم الحفظ بنجاح");
@@ -215,7 +267,6 @@ function rowTable(sieveMM, sieveNo, pass, resrved, index) {
   rowTable.addEventListener("click", (event) => {
     if (event.target === rowTable) {
       link.style.display = "none";
-      // nav.style.backgroundColor = "#aaef58";
     }
   });
   const titleSieve = document.createElement("titleSieve");
@@ -283,6 +334,10 @@ function fetchData(content) {
         querySnapshot.forEach((doc) => {
           dataList = doc.data()["list"];
           weight = doc.data()["weight"];
+          if (receivedList["selectedText"] == "استخلاص") {
+            bitumin = doc.data()["bitumin"];
+            bituminPercent = doc.data()["bituminPercent"];
+          }
         });
         sampleWieght.value = weight;
         dataList.forEach((element, index) => {

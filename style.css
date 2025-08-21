@@ -21,8 +21,6 @@ body {
   border-radius: 8px;
 }
 
-
-
 .container select {
   width: 95%;
   text-align: center;
@@ -45,9 +43,26 @@ body {
   padding: 10px;
   border-radius: 8px;
 }
-
-.container .sample input {
+.sample .all {
+  display: flex;
+  text-align: center;
+  align-items: center;
   flex: 1;
+}
+.sample .extract {
+  display: none;
+  text-align: center;
+  align-items: center;
+  flex: 1;
+}
+.extract,.all {
+  justify-content: space-between;
+}
+
+.container .sample .all input,
+.container .sample .extract input {
+  flex: 1;
+  margin: 8px;
   border-radius: 8px;
   padding: 12px;
   text-align: center;
@@ -218,7 +233,10 @@ body {
     border-radius: 8px;
     padding: 10px;
   }
-  .nav{
+  .sample {
+    flex-direction: column;
+  }
+  .nav {
     background-color: #aaef58;
   }
   .nav .icon {
@@ -238,9 +256,18 @@ body {
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
   }
+  .all, .extract {
+    width: 100%;
+  }
+  
+  .all input, .extract input{
+    flex: 0;
+    width: 60%;
+  }
+
 }
 
-.nav img{
+.nav img {
   width: 40px;
   height: 40px;
   border-radius: 50%;
