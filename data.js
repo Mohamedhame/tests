@@ -10,11 +10,12 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
+const auth = firebase.auth();
 const db = firebase.firestore();
 
 const container = document.getElementById("container");
 const headTable = document.getElementById("headTable");
-const h3 = document.getElementById("h3");
+const myDate = document.getElementById("myDate");
 const sampleWieght = document.getElementById("sample");
 const sampleWieght2 = document.getElementById("sample2");
 const overlay = document.getElementById("overlay");
@@ -33,6 +34,13 @@ let content;
 let saveButton;
 let bitumin;
 let bituminPercent;
+
+auth.onAuthStateChanged((user) => {
+  if (user) {
+  } else {
+    window.location.href = "index.html";
+  }
+});
 
 icon.addEventListener("click", function () {
   if (link.style.display == "flex") {
@@ -174,9 +182,7 @@ function updateBitumin() {
 }
 
 function start() {
-  h3.innerHTML = receivedList["date"];
-  h3.style.display = "flex";
-  h3.style.color = "white";
+  myDate.value = receivedList["date"];
   if (receivedList.selectedText == "استخلاص") {
     extract.style.display = "flex";
     extract2.style.display = "block";
@@ -229,6 +235,7 @@ function start() {
           let updateData = {
             weight: sampleWeight,
             list: dataList,
+            date:myDate.value
           };
           if (receivedList.selectedText == "استخلاص") {
             const sampleWeightInput2 = document.getElementById("sample2");

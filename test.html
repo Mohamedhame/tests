@@ -9,27 +9,36 @@
   <body dir="rtl">
     <div class="container" id="container">
       <!-- nav -->
-      <div id="nav" class="nav">
+      <div id="nav" class="nav2">
         <div id="link" class="link">
           <img src="logo.jpg" alt="logo" />
           <a href="index.html">الرئسية</a>
         </div>
         <div id="icon" class="icon">&#9776;</div>
       </div>
+      <!-- Date -->
+      <div class="date">
+        <h4>التاريخ</h4>
+        <input type="date" id="myDate" />
+      </div>
+      <!-- //Date -->
+      <div class="select">
+        <!-- select -->
+        <select id="mySpinner" name="items">
+          <option value="item1">استخلاص</option>
+          <option value="item2">سن (12-6)</option>
+          <option value="item3">سن (19-12)</option>
+          <option value="item4">رمل</option>
+        </select>
+        <!-- //select -->
 
-      <!-- select -->
-      <select id="mySpinner" name="items">
-        <option value="item1">استخلاص</option>
-        <option value="item2">سن (12-6)</option>
-        <option value="item3">سن (19-12)</option>
-        <option value="item4">رمل</option>
-      </select>
-      <!-- //select -->
+        <div id="edit" class="btn">الحدود</div>
+      </div>
 
       <!--  sample-->
       <div class="sample">
         <div id="extract" class="extract">
-           <label for="sample">وزن العينة</label>
+          <label for="sample">وزن العينة</label>
           <input id="sample2" type="number" />
         </div>
         <div class="all">
@@ -37,9 +46,7 @@
           <input id="sample" type="number" />
         </div>
 
-         <div id="extract2" class="extract">
-        </div>
-        
+        <div id="extract2" class="extract"></div>
       </div>
       <!-- // sample-->
 
@@ -55,15 +62,19 @@
         </div>
         <div class="resrved">محجوز</div>
         <div class="passing">مار %</div>
+        <div class="limit">
+          الحدود
+          <hr />
+          <div class="nameLimit">
+            <span>العليا</span>
+            <span>الدنيا</span>
+          </div>
+        </div>
       </div>
       <!-- // Head Table-->
 
       <div id="overlay" class="overlay">
-        <div class="dialog" id="dialog">
-          <!-- <h3>خطأ</h3>
-          <p id="body">لا يمكن ترك اي حقل فارغ</p>
-          <button class="close-btn" id="closeDialog">إغلاق</button> -->
-        </div>
+        <div class="dialog" id="dialog"></div>
       </div>
       <!--  -->
     </div>
@@ -72,6 +83,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

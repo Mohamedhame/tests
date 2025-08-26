@@ -1,46 +1,44 @@
 class Sieve {
-  constructor(mm, no, reserved, passing) {
+  constructor(mm, no, reserved, passing, upper, lower) {
     this.mm = mm;
     this.no = no;
     this.resrved = reserved;
     this.passing = passing;
-  }
-}
-
-class Data {
-  constructor(weightOfSample, list) {
-    this.weightOfSample = weightOfSample;
-    this.list = list;
+    this.upper = upper;
+    this.lower = lower;
   }
 }
 
 var extraction = [
-  new Sieve(19, "3/4", 0, ""),
-  new Sieve(9, "3/8", 0, ""),
-  new Sieve(4.75, "4", 0, ""),
-  new Sieve(2.36, "8", 0, ""),
-  new Sieve(0.6, "30", 0, ""),
-  new Sieve(0.3, "50", 0, ""),
-  new Sieve(0.15, "100", 0, ""),
-  new Sieve(0.075, "200", 0, ""),
+  new Sieve(25, "1", 0, "", "", ""),
+  new Sieve(19, "3/4", 0, "", "", ""),
+  new Sieve(9, "3/8", 0, "", "", ""),
+  new Sieve(4.75, "4", 0, "", "", ""),
+  new Sieve(2.36, "8", 0, "", "", ""),
+  new Sieve(0.6, "30", 0, "", "", ""),
+  new Sieve(0.3, "50", 0, "", "", ""),
+  new Sieve(0.15, "100", 0, "", "", ""),
+  new Sieve(0.075, "200", 0, "", "", ""),
 ];
 
-var size1 = [
-  new Sieve(12.5, "1/2", 0, ""),
-  new Sieve(9, "3/8", 0, ""),
-  new Sieve(4.75, "4", 0, ""),
-];
-
-var size2 = [
-  new Sieve(19, "3/4", 0, ""),
-  new Sieve(12.5, "1/2", 0, ""),
-  new Sieve(9, "3/8", 0, ""),
-  new Sieve(4.75, "4", 0, ""),
+var aggregate = [
+  new Sieve(25, "1", 0, "", "", ""),
+  new Sieve(19, "3/4", 0, "", "", ""),
+  new Sieve(12.5, "1/2", 0, "", "", ""),
+  new Sieve(9, "3/8", 0, "", "", ""),
+  new Sieve(4.75, "4", 0, "", "", ""),
+  new Sieve(2.36, "8", 0, "", "", ""),
+  new Sieve(1.18, "16", 0, "", "", ""),
+  new Sieve(0.6, "30", 0, "", "", ""),
+  new Sieve(0.3, "50", 0, "", "", ""),
+  new Sieve(0.15, "100", 0, "", "", ""),
+  new Sieve(0.075, "200", 0, "", "", ""),
 ];
 
 var sand = [
   new Sieve(4.75, "4", 0, ""),
   new Sieve(2.36, "8", 0, ""),
+  new Sieve(1.18, "16", 0, "", "", ""),
   new Sieve(0.6, "30", 0, ""),
   new Sieve(0.3, "50", 0, ""),
   new Sieve(0.15, "100", 0, ""),
@@ -60,6 +58,8 @@ const dialog = document.getElementById("dialog");
 const extract = document.getElementById("extract");
 const extract2 = document.getElementById("extract2");
 const labelExtract = document.getElementById("labelExtract");
+const myDate = document.getElementById("myDate");
+const edit = document.getElementById("edit");
 let email = localStorage.getItem("email");
 
 const firebaseConfig = {
@@ -74,16 +74,34 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
+const auth = firebase.auth();
 const db = firebase.firestore();
+
+myDate.value = getDate();
 
 let bitumin;
 let bituminPercent;
 let content;
 let saveButton;
+var list = extraction;
 var sampleNo = 1;
+var typeOfLimits = "extraction";
 extract.style.display = "flex";
 extract2.style.display = "block";
 labelExtract.innerHTML = "وزن العينة بعد الاختبار";
+
+edit.addEventListener("click", () => {
+  createDialogTable();
+  overlay.style.display = "flex";
+  document.body.classList.add("no-scroll");
+});
+
+auth.onAuthStateChanged((user) => {
+  if (user) {
+  } else {
+    window.location.href = "index.html";
+  }
+});
 
 sampleWeight.addEventListener("input", function () {
   if (sampleWeight2.value != "") {
@@ -110,7 +128,16 @@ function createTableOfExtrac(list) {
   content = globalSieve();
   list.forEach((element, index) => {
     const hr = document.createElement("hr");
-    content.appendChild(rowTable(element.mm, element.no, index, list));
+    content.appendChild(
+      rowTable(
+        element.mm,
+        element.no,
+        index,
+        list,
+        element.upper,
+        element.lower
+      )
+    );
     if (index < list.length - 1) {
       content.appendChild(hr);
     }
@@ -127,7 +154,7 @@ function createTableOfExtrac(list) {
     const sampleWeightInput2 = document.getElementById("sample2");
     const weightAfter = sampleWeightInput2.value.trim();
     const selectedText = mySelect.options[mySelect.selectedIndex].text;
-    const date = getDate();
+    const date = myDate.value;
     fetchDataFunction(selectedText, date, sampleWeight, list, weightAfter);
   });
 
@@ -135,13 +162,20 @@ function createTableOfExtrac(list) {
   container.appendChild(saveButton);
 }
 
-function rowTable(sieveMM, sieveNo, index, list) {
+function rowTable(
+  sieveMM,
+  sieveNo,
+  index,
+  list,
+  upperLimit = "",
+  lowerLimit = ""
+) {
   const rowTable = document.createElement("div");
   rowTable.classList.add("rowTable");
   const titleSieve = document.createElement("titleSieve");
   titleSieve.classList.add("titleSieve");
-  const mm = document.createElement("div");
-  const no = document.createElement("div");
+  const mm = document.createElement("span");
+  const no = document.createElement("span");
   mm.innerHTML = sieveMM;
   no.innerHTML = sieveNo;
   titleSieve.appendChild(mm);
@@ -159,6 +193,17 @@ function rowTable(sieveMM, sieveNo, index, list) {
     }
   });
 
+  const limit = document.createElement("div");
+  limit.classList.add("limit");
+  const upper = document.createElement("span");
+  const lower = document.createElement("span");
+
+  upper.innerHTML = upperLimit;
+  lower.innerHTML = lowerLimit;
+
+  limit.appendChild(upper);
+  limit.appendChild(lower);
+
   sampleWeight.addEventListener("input", function () {
     if (sampleWeight.value != "") {
       passing.innerHTML = "";
@@ -175,6 +220,7 @@ function rowTable(sieveMM, sieveNo, index, list) {
   rowTable.appendChild(titleSieve);
   rowTable.appendChild(input);
   rowTable.appendChild(passing);
+  rowTable.appendChild(limit);
 
   return rowTable;
 }
@@ -195,7 +241,7 @@ function globalSieve() {
   return content;
 }
 
-createTableOfExtrac(extraction);
+createTableOfExtrac(list);
 
 mySelect.addEventListener("change", function () {
   const selectedValue = this.value;
@@ -207,31 +253,38 @@ mySelect.addEventListener("change", function () {
     saveButton.style.display = "none";
   }
 
-  let list;
   switch (selectedValue) {
     case "item1":
       extract.style.display = "flex";
       extract2.style.display = "flex";
       labelExtract.innerHTML = "وزن العينة بعد الاختبار";
       list = extraction;
+      typeOfLimits = "extraction";
+      getLimits();
       break;
     case "item2":
       extract.style.display = "none";
       extract2.style.display = "none";
       labelExtract.innerHTML = "وزن العينة";
-      list = size1;
+      list = aggregate;
+      typeOfLimits = "size1";
+      getLimits();
       break;
     case "item3":
       extract.style.display = "none";
       extract2.style.display = "none";
       labelExtract.innerHTML = "وزن العينة";
-      list = size2;
+      list = aggregate;
+      typeOfLimits = "size2";
+      getLimits();
       break;
     case "item4":
       extract.style.display = "none";
       extract2.style.display = "none";
       labelExtract.innerHTML = "وزن العينة";
       list = sand;
+      typeOfLimits = "sand";
+      getLimits();
       break;
     default:
       extract.style.display = "none";
@@ -254,11 +307,13 @@ function getDate() {
 //=======
 overlay.addEventListener("click", (event) => {
   if (event.target === overlay) {
+    document.body.classList.remove("no-scroll");
     overlay.style.display = "none";
   }
 });
-
+//==========
 function createDialog(text = "لا يمكن ترك اي حقل فارغ") {
+  dialog.innerHTML = "";
   const h3 = document.createElement("h3");
   h3.innerHTML = "خطأ";
   dialog.appendChild(h3);
@@ -277,6 +332,79 @@ function createDialog(text = "لا يمكن ترك اي حقل فارغ") {
   });
 
   dialog.appendChild(btnGetData);
+}
+//============
+function createDialogTable() {
+  dialog.innerHTML = "";
+  dialog.classList.add("dialogTable");
+  const h3 = document.createElement("h3");
+  h3.innerHTML = "الحدود";
+  dialog.appendChild(h3);
+  const box = document.createElement("div");
+  box.classList.add("box");
+  const rowTable = document.createElement("div");
+  rowTable.classList.add("rowTableDialogHead");
+  const sieve = document.createElement("div");
+  sieve.innerHTML = "المناخل";
+  sieve.classList.add("retreve");
+  const retreve = document.createElement("div");
+  retreve.innerHTML = "الاعلي";
+  retreve.classList.add("retreve");
+  const pass = document.createElement("div");
+  pass.classList.add("retreve");
+  pass.innerHTML = "الادني";
+  rowTable.appendChild(sieve);
+  rowTable.appendChild(retreve);
+  rowTable.appendChild(pass);
+  box.appendChild(rowTable);
+  list.forEach((element, index) => {
+    const hr = document.createElement("hr");
+    box.appendChild(rowTableDialog(element.mm, element.no, index));
+    if (index < extraction.length - 1) {
+      box.appendChild(hr);
+    }
+  });
+  dialog.appendChild(box);
+
+  const save = document.createElement("div");
+  save.classList.add("btn");
+  save.innerHTML = "حفظ";
+  save.style.border = "none";
+  save.style.width = "50%";
+  save.addEventListener("click", () => {
+    addLimits();
+  });
+  dialog.appendChild(save);
+}
+
+function rowTableDialog(sieveMM, sieveNo, index) {
+  const rowTable = document.createElement("div");
+  rowTable.classList.add("rowTableDialog");
+  const titleSieve = document.createElement("div");
+  titleSieve.classList.add("makhel");
+  const mm = document.createElement("span");
+  const no = document.createElement("span");
+  mm.innerHTML = sieveMM;
+  no.innerHTML = sieveNo;
+  titleSieve.appendChild(mm);
+  titleSieve.appendChild(no);
+  const upper = document.createElement("input");
+  upper.classList.add("entry");
+  upper.setAttribute("type", "number");
+  upper.addEventListener("input", function () {
+    list[index].upper = upper.value;
+  });
+  const lower = document.createElement("input");
+  lower.setAttribute("type", "number");
+  lower.addEventListener("input", function () {
+    list[index].lower = lower.value;
+  });
+  lower.classList.add("entry");
+
+  rowTable.appendChild(titleSieve);
+  rowTable.appendChild(upper);
+  rowTable.appendChild(lower);
+  return rowTable;
 }
 
 function fetchDataFunction(
@@ -326,44 +454,73 @@ function addData(sampleWeight, list, selectedText, date, weightAfter) {
     resrved: item.resrved,
     passing: item.passing,
   }));
+
+  let insertData = {
+    selectedText: selectedText,
+    date: date,
+    weight: sampleWeight,
+    sampleNo: sampleNo,
+    list: plainList,
+    email: email,
+  };
+
   if (selectedValue == "item1") {
-    db.collection("test")
-      .add({
-        selectedText: selectedText,
-        date: date,
-        weightAfter: weightAfter,
-        weight: sampleWeight,
-        bitumin:bitumin,
-        bituminPercent:bituminPercent,
-        sampleNo: sampleNo,
-        list: plainList,
-        email: email,
-      })
-      .then(() => {
-        overlay.style.display = "none";
-        console.log("تم الحفظ بنجاح");
-      })
-      .catch((error) => {
-        overlay.style.display = "none";
-        console.error("حصل خطأ أثناء الحفظ:", error);
-      });
-  } else {
-    db.collection("test")
-      .add({
-        selectedText: selectedText,
-        date: date,
-        weight: sampleWeight,
-        sampleNo: sampleNo,
-        list: plainList,
-        email: email,
-      })
-      .then(() => {
-        overlay.style.display = "none";
-        console.log("تم الحفظ بنجاح");
-      })
-      .catch((error) => {
-        overlay.style.display = "none";
-        console.error("حصل خطأ أثناء الحفظ:", error);
-      });
+    insertData.weightAfter = weightAfter;
+    insertData.bitumin = bitumin;
+    insertData.bituminPercent = bituminPercent;
   }
+  db.collection("test")
+    .add(insertData)
+    .then(() => {
+      overlay.style.display = "none";
+      console.log("تم الحفظ بنجاح");
+    })
+    .catch((error) => {
+      overlay.style.display = "none";
+      console.error("حصل خطأ أثناء الحفظ:", error);
+    });
 }
+
+function addLimits() {
+  const extractionData = list.map((sieve) => ({
+    mm: sieve.mm,
+    no: sieve.no,
+    upper: sieve.upper,
+    lower: sieve.lower,
+  }));
+  db.collection("limits")
+    .doc(typeOfLimits)
+    .set({
+      limits: extractionData,
+    })
+    .then(() => {
+      console.log("تمت إضافة القائمة بنجاح 👍");
+    })
+    .catch((error) => {
+      console.error("خطأ في الإضافة: ", error);
+    });
+}
+
+function getLimits() {
+  db.collection("limits")
+    .doc(typeOfLimits)
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.data()["limits"].forEach((element, index) => {
+        list[index].lower = element.lower;
+        list[index].upper = element.upper;
+      });
+      if (content) {
+        content.innerHTML = "";
+        saveButton.innerHTML = "";
+        content.style.display = "none";
+        saveButton.style.display = "none";
+      }
+      createTableOfExtrac(list);
+    })
+    .catch((error) => {
+      console.error("خطأ في جلب البيانات:", error);
+    });
+}
+
+getLimits();

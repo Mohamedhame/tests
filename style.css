@@ -5,8 +5,11 @@
 }
 
 body {
-  /* background-color: #AAEF58; */
   background-color: #111216;
+}
+
+body.no-scroll {
+  overflow: hidden;
 }
 
 .container {
@@ -21,14 +24,23 @@ body {
   border-radius: 8px;
 }
 
-.container select {
+.container .select {
+  display: flex;
   width: 95%;
+  align-items: center;
+  justify-content: space-between;
+}
+.select .btn {
+  width: 35%;
+}
+select {
+  width: 60%;
   text-align: center;
-  padding: 10px;
   font-size: 16px;
-  border-radius: 5px;
   border: 1px solid #ccc;
-  margin-top: 10px;
+  margin: 10px;
+  border-radius: 12px;
+  padding: 10px;
 }
 .container .sample {
   display: flex;
@@ -55,8 +67,25 @@ body {
   align-items: center;
   flex: 1;
 }
-.extract,.all {
+.extract,
+.all {
   justify-content: space-between;
+}
+
+.date {
+  width: 95%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #ccc;
+}
+
+.date input {
+  flex: 1;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
 }
 
 .container .sample .all input,
@@ -84,18 +113,23 @@ body {
   min-width: 20%;
   text-align: center;
 }
-.sieve .siev {
+.siev,
+.nameLimit {
   width: 100%;
   display: flex;
   justify-content: space-between;
 }
-.resrved {
+
+.resrved,
+.passing,
+.limit {
   width: 20%;
   text-align: center;
 }
-.passing {
-  width: 20%;
-  text-align: center;
+.limit {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .container .contnetTable {
@@ -153,13 +187,17 @@ body {
 }
 
 .dialog {
+  display: flex;
+  flex-direction: column;
   background: white;
   padding: 20px;
   border-radius: 8px;
-  min-width: 250px;
   text-align: center;
+  align-items: center;
 }
-
+.dialogTable {
+  width: 80%;
+}
 .close-btn {
   margin-top: 10px;
   padding: 5px 10px;
@@ -189,7 +227,8 @@ body {
   padding: 8px;
 }
 
-.nav {
+.nav,
+.nav2 {
   width: 100%;
   margin: 0px auto;
   display: flex;
@@ -200,14 +239,16 @@ body {
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
 }
-.nav .link {
+.nav .link,
+.nav2 .link {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.nav .icon {
+.nav .icon,
+.nav2 .icon {
   display: none;
   cursor: pointer;
 }
@@ -215,6 +256,7 @@ body {
   cursor: pointer;
 }
 .nav a,
+.nav2 a,
 .excel {
   text-decoration: none;
   color: #111216;
@@ -223,6 +265,9 @@ body {
 }
 
 @media (max-width: 768px) {
+  .limit {
+    display: none;
+  }
   .container {
     width: 98%;
     height: 98%;
@@ -256,22 +301,77 @@ body {
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
   }
-  .all, .extract {
+  .all,
+  .extract {
     width: 100%;
   }
-  
-  .all input, .extract input{
+
+  .all input,
+  .extract input {
     flex: 0;
     width: 60%;
   }
 
+  .rowTableDialogHead,
+  .rowTableDialog {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    text-align: center;
+  }
 }
 
-.nav img {
+.nav img,
+.nav2 img {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   border-width: 1px;
   border-style: solid;
   border-color: #ccc;
+}
+
+.box {
+  width: 100%;
+  max-width: 100%;
+  max-height: 70vh; 
+  padding: 10px;
+  border: 0.5px solid black;
+  border-radius: 12px;
+  overflow-y: auto;
+  overflow-x: auto;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.rowTableDialogHead,
+.rowTableDialog {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.rowTableDialogHead {
+  border: 0.5px solid black;
+  border-radius: 8px;
+}
+.makhel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 20%;
+  text-align: center;
+}
+.retreve,
+.pass {
+  width: 20%;
+  text-align: center;
+}
+.entry {
+  width: 20%;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
 }
