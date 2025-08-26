@@ -391,11 +391,13 @@ function rowTableDialog(sieveMM, sieveNo, index) {
   const upper = document.createElement("input");
   upper.classList.add("entry");
   upper.setAttribute("type", "number");
+  upper.value = list[index].upper;
   upper.addEventListener("input", function () {
     list[index].upper = upper.value;
   });
   const lower = document.createElement("input");
   lower.setAttribute("type", "number");
+  lower.value = list[index].lower;
   lower.addEventListener("input", function () {
     list[index].lower = lower.value;
   });
